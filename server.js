@@ -1,6 +1,7 @@
 require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
+const http = require('http');
 const { Telegraf, Markup } = require('telegraf');
 
 const botToken = process.env.CHAT_API;
@@ -196,6 +197,23 @@ bot.catch((erreur) => {
 
 bot.launch().then(() => {
   console.log('Bot démarré avec succès.');
+});
+
+const server = http.createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+  res.end(
+    JSON.stringify({
+      status: 'ok',
+      message: 'Bot Telegraf actif',
+      time: new Date().toISOString(),
+    })
+  );
+});
+
+const PORT = process.env.PORT || 5000;
+
+server.listen(PORT, () => {
+  console.log(`Endpoint de supervision disponible sur le port ${PORT}.`);
 });
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
